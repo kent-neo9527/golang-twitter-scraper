@@ -1,6 +1,7 @@
 package twitterscraper
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -58,6 +59,15 @@ func (s *Scraper) newRequest(method string, url string) (*http.Request, error) {
 	q.Add("include_tweet_replies", strconv.FormatBool(s.includeReplies))
 	q.Add("ext", "mediaStats,highlightedLabel,hasNftAvatar,voiceInfo,birdwatchPivot,enrichments,superFollowMetadata,unmentionInfo,editControl,collab_control,vibe")
 	req.URL.RawQuery = q.Encode()
+
+	return req, nil
+}
+
+func (s *Scraper) newRequestWithData(method string, url string, data []byte) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
