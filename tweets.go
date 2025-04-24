@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type ResponseLikeAndBookmark struct {
-	Data map[string]string `json:"data"` // 内层使用 map 来动态接收不同的键值对
-}
-
 // GetTweets returns channel with tweets for a given user.
 func (s *Scraper) GetTweets(ctx context.Context, user string, maxTweetsNbr int) <-chan *TweetResult {
 	return getTweetTimeline(ctx, user, maxTweetsNbr, s.FetchTweets)
@@ -216,7 +212,7 @@ func (s *Scraper) GetTweet(id string) (*Tweet, error) {
 
 // {"variables":{"tweet_id":"1915209125442752818"},"queryId":"aoDbu3RHznuiSkQ9aNM67Q"}
 // https://x.com/i/api/graphql/aoDbu3RHznuiSkQ9aNM67Q/CreateBookmark {"variables":{"tweet_id":"1914635552831177176"},"queryId":"aoDbu3RHznuiSkQ9aNM67Q"} {"data":{"tweet_bookmark_put":"Done"}} POST
-func (s *Scraper) Bookmark(tweetID string) (*ResponseLikeAndBookmark, error) {
+func (s *Scraper) Bookmark(tweetID string) (*LikeAndBookmark, error) {
 	createBookmark := "https://x.com/i/api/graphql/aoDbu3RHznuiSkQ9aNM67Q/CreateBookmark"
 
 	// 使用 map 构建请求体
@@ -234,7 +230,7 @@ func (s *Scraper) Bookmark(tweetID string) (*ResponseLikeAndBookmark, error) {
 	if err != nil {
 		return nil, err
 	}
-	var responseLikeAndBookmark ResponseLikeAndBookmark
+	var responseLikeAndBookmark LikeAndBookmark
 	err = s.RequestAPI(req, &responseLikeAndBookmark)
 	if err != nil {
 		return nil, err
@@ -244,7 +240,7 @@ func (s *Scraper) Bookmark(tweetID string) (*ResponseLikeAndBookmark, error) {
 
 // {"variables":{"tweet_id":"1915209125442752818"},"queryId":"lI07N6Otwv1PhnEgXILM7A"}
 // https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet {"variables":{"tweet_id":"1914666028077818198"},"queryId":"lI07N6Otwv1PhnEgXILM7A"}   {"data":{"favorite_tweet":"Done"}} POST
-func (s *Scraper) FavoriteTweet(tweetID string) (*ResponseLikeAndBookmark, error) {
+func (s *Scraper) FavoriteTweet(tweetID string) (*LikeAndBookmark, error) {
 	favoriteTweet := "https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet"
 	requestBody := map[string]interface{}{
 		"variables": map[string]string{
@@ -260,7 +256,7 @@ func (s *Scraper) FavoriteTweet(tweetID string) (*ResponseLikeAndBookmark, error
 	if err != nil {
 		return nil, err
 	}
-	var responseLikeAndBookmark ResponseLikeAndBookmark
+	var responseLikeAndBookmark LikeAndBookmark
 	err = s.RequestAPI(req, &responseLikeAndBookmark)
 	if err != nil {
 		return nil, err

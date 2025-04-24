@@ -185,4 +185,8 @@ type (
 
 	fetchProfileFunc func(query string, maxProfilesNbr int, cursor string) ([]*Profile, string, error)
 	fetchTweetFunc   func(query string, maxTweetsNbr int, cursor string) ([]*Tweet, string, error)
+
+	LikeAndBookmark struct {
+		Data map[string]string `json:"data"` // 内层使用 map 来动态接收不同的键值对
+	}
 )
